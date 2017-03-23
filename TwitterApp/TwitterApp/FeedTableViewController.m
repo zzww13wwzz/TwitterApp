@@ -8,6 +8,7 @@
 
 #import "FeedTableViewController.h"
 #import "FeedTableViewCell.h"
+#import "NewViewController.h"
 
 @interface FeedTableViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
@@ -22,26 +23,51 @@
     [self setupNavigation];
 }
 
+
+
+
+
 - (void) setupNavigation {
     [[self navigationController] setNavigationBarHidden:NO animated:NO];
-    UIBarButtonItem * newButton = [[UIBarButtonItem alloc] initWithTitle:@"New"
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"New"
                                                                    style:UIBarButtonItemStylePlain
                                                                   target:self
                                                                   action:@selector(newAction)];
-    UIBarButtonItem * backButton = [[UIBarButtonItem alloc] initWithTitle:@"Logout"
+    self.navigationItem.leftBarButtonItem =  [[UIBarButtonItem alloc] initWithTitle:@"Logout"
                                                                     style:UIBarButtonItemStylePlain
                                                                    target:self
                                                                    action:@selector(logoutAction)];
-    [self.navigationItem setRightBarButtonItem:newButton];
-    [self.navigationItem setLeftBarButtonItem:backButton];
-
 }
 
 - (void)setupView {
+    /*
+    STTwitterAPI *twitter = [STTwitterAPI twitterAPIApplicationOnlyWithConsumerKey:@""
+                                                                    consumerSecret:@""];
     
-    }
-- (void) newAction {
+    [twitter verifyCredentialsWithSuccessBlock:^(NSString *bearerToken) {
+        
+        NSLog(@"Access granted with %@", bearerToken);
+        
+        [twitter getUserTimelineWithScreenName:@"barackobama" successBlock:^(NSArray *statuses) {
+            NSLog(@"-- statuses: %@", statuses);
+        } errorBlock:^(NSError *error) {
+            NSLog(@"-- error: %@", error);
+        }];
+        
+    } errorBlock:^(NSError *error) {
+        NSLog(@"-- error %@", error);
+    }];*/
+    
+}
 
+- (void) newAction {
+    NewViewController * newVC = [self.storyboard instantiateViewControllerWithIdentifier:@"NewVC"];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:newVC];
+    navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    [self.navigationController presentViewController:navController
+                                            animated:YES
+                                          completion:nil];
 }
 
 - (void) logoutAction {
@@ -102,6 +128,8 @@
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSLog(@"TAP TAp");
+    [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"DetailVC"]
+                                         animated:YES];
 }
 
 @end
