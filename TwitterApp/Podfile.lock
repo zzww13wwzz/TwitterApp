@@ -1,0 +1,28 @@
+PODS:
+  - MagicalRecord/Shorthand (2.2)
+  - MBProgressHUD (1.0.0)
+  - STTwitter (0.2.6)
+
+DEPENDENCIES:
+  - MagicalRecord/Shorthand
+  - MBProgressHUD (from `https://github.com/jdg/MBProgressHUD.git`, tag `1.0.0`)
+  - STTwitter
+
+EXTERNAL SOURCES:
+  MBProgressHUD:
+    :git: https://github.com/jdg/MBProgressHUD.git
+    :tag: 1.0.0
+
+CHECKOUT OPTIONS:
+  MBProgressHUD:
+    :git: https://github.com/jdg/MBProgressHUD.git
+    :tag: 1.0.0
+
+SPEC CHECKSUMS:
+  MagicalRecord: 2dc87179ae7c1f2a274442624ec65a07d4357a6f
+  MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
+  STTwitter: 30ee2f79eff78c3d633a1edc869e97db9c9ead59
+
+PODFILE CHECKSUM: 25af180ca0d26edd5014fb15d1bb5818de11893d
+
+COCOAPODS: 1.2.0
