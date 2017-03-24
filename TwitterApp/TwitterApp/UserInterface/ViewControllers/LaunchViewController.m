@@ -25,13 +25,7 @@
 - (void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-//    [self presentViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"LoginVC"]
-//                       animated:NO
-//                     completion:nil];
-//    
-    
-    [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"FeedVC"]
-                                         animated:NO];
+    [self setupUser];
     
     
     
@@ -52,4 +46,21 @@
 //    }
 }
 
+- (void)setupUser {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults removeObjectForKey:@"user"];
+    
+    if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user"]) {
+        NSLog(@"%@", [[NSUserDefaults standardUserDefaults] objectForKey:@"user"]);
+        [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"FeedVC"]
+                                             animated:NO];
+        
+    } else {
+        [self presentViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"LoginVC"]
+                           animated:NO
+                         completion:nil];
+        
+        
+    }
+}
 @end

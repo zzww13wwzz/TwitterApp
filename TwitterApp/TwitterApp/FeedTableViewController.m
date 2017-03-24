@@ -9,6 +9,7 @@
 #import "FeedTableViewController.h"
 #import "FeedTableViewCell.h"
 #import "NewViewController.h"
+#import "STTwitterAPI.h"
 
 @interface FeedTableViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
@@ -41,23 +42,40 @@
 }
 
 - (void)setupView {
-    /*
-    STTwitterAPI *twitter = [STTwitterAPI twitterAPIApplicationOnlyWithConsumerKey:@""
-                                                                    consumerSecret:@""];
     
-    [twitter verifyCredentialsWithSuccessBlock:^(NSString *bearerToken) {
-        
-        NSLog(@"Access granted with %@", bearerToken);
-        
-        [twitter getUserTimelineWithScreenName:@"barackobama" successBlock:^(NSArray *statuses) {
-            NSLog(@"-- statuses: %@", statuses);
-        } errorBlock:^(NSError *error) {
-            NSLog(@"-- error: %@", error);
-        }];
-        
-    } errorBlock:^(NSError *error) {
-        NSLog(@"-- error %@", error);
-    }];*/
+//    twitterAPIOSWithFirstAccount
+    
+//    STTwitterAPI *twitter = [STTwitterAPI twitterAPIWithOAuthConsumerKey:@"vlmu1T2Vpsh1vN9jzCxSntnRo" consumerSecret:@"By0VWWIipsJxATQ43vTJUGTBXDYZcYrcbFnDH1yD9vW8cuuKmE"];
+//    
+//    [twitter verifyCredentialsWithSuccessBlock:^(NSString *bearerToken) {
+//        
+//        NSLog(@"Access granted with %@", bearerToken);
+//        
+//        [twitter getUserTimelineWithScreenName:@"barackobama" successBlock:^(NSArray *statuses) {
+//            NSLog(@"-- statuses: %@", statuses);
+//        } errorBlock:^(NSError *error) {
+//            NSLog(@"-- error: %@", error);
+//        }];
+//        
+//    } errorBlock:^(NSError *error) {
+//        NSLog(@"-- error %@", error);
+//    }];
+    
+//    STTwitterAPI *twitter = [STTwitterAPI twitterAPIApplicationOnlyWithConsumerKey:OAUTH_CONSUMER_KEY consumerSecret:OAUTH_CONSUMER_SECRET];
+//    
+//    [twitter verifyCredentialsWithSuccessBlock:^(NSString *username) {
+//        
+//        [twitter getSearchTweetsWithQuery:searchQuery successBlock:^(NSDictionary *searchMetadata, NSArray *statuses) {
+//            NSLog(@"Search data : %@",searchMetadata);
+//            NSLog(@"\n\n Status : %@",statuses);
+//            
+//        } errorBlock:^(NSError *error) {
+//            NSLog(@"Error : %@",error);
+//        }];
+//        
+//    } errorBlock:^(NSError *error) {
+//        NSLog(@"-- error %@", error);
+//    }];
     
 }
 
@@ -76,21 +94,19 @@
                                   message:nil
                                   preferredStyle:UIAlertControllerStyleAlert];
 
-    UIAlertAction* ok = [UIAlertAction
-                         actionWithTitle:@"Logout"
-                         style:UIAlertActionStyleDefault
-                         handler:^(UIAlertAction * action) {
-                             [self logout];
-                             [alert dismissViewControllerAnimated:YES completion:nil];
-                         }];
-    UIAlertAction* cancel = [UIAlertAction
-                             actionWithTitle:@"Cancel"
-                             style:UIAlertActionStyleDefault
-                             handler:^(UIAlertAction * action) {
-                                 [alert dismissViewControllerAnimated:YES completion:nil];
-                             }];
-    [alert addAction:ok];
-    [alert addAction:cancel];
+    [alert addAction:[UIAlertAction
+                       actionWithTitle:@"Logout"
+                       style:UIAlertActionStyleDefault
+                       handler:^(UIAlertAction * action) {
+                           [self logout];
+                           [alert dismissViewControllerAnimated:YES completion:nil];
+                       }]];
+    [alert addAction:[UIAlertAction
+                      actionWithTitle:@"Cancel"
+                      style:UIAlertActionStyleDefault
+                      handler:^(UIAlertAction * action) {
+                          [alert dismissViewControllerAnimated:YES completion:nil];
+                      }]];
     
     [self presentViewController:alert animated:YES completion:nil];
 }
