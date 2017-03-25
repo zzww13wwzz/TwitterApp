@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1" systemVersion="11A491" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
-    <elements/>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="16D32" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+    <entity name="History" representedClassName="History" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" optional="YES" syncable="YES"/>
+        <attribute name="nickName" optional="YES" syncable="YES"/>
+        <attribute name="textMessage" optional="YES" syncable="YES"/>
+        <attribute name="userIconUrl" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userName" optional="YES" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="History" positionX="-54" positionY="-9" width="128" height="120"/>
+    </elements>
 </model>
