@@ -11,6 +11,9 @@
 #import "STTwitterOAuth.h"
 #import <Accounts/Accounts.h>
 
+NSString * const consumerKey = @"vlmu1T2Vpsh1vN9jzCxSntnRo";
+NSString * const consumerSecret = @"By0VWWIipsJxATQ43vTJUGTBXDYZcYrcbFnDH1yD9vW8cuuKmE";
+
 @interface LoginViewController () <UIWebViewDelegate>
 
 typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessage);
@@ -38,13 +41,11 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
     [super viewDidLoad];
     self.accountStore = [[ACAccountStore alloc] init];
     _webView.hidden = true;
-    
-
 }
 
 - (STTwitterOAuth *)oauth {
     if (!_oauth) {
-        _oauth = [STTwitterOAuth twitterOAuthWithConsumerName:@"TwitterApp" consumerKey:@"vlmu1T2Vpsh1vN9jzCxSntnRo" consumerSecret:@"By0VWWIipsJxATQ43vTJUGTBXDYZcYrcbFnDH1yD9vW8cuuKmE"];
+        _oauth = [STTwitterOAuth twitterOAuthWithConsumerName:@"TwitterApp" consumerKey:consumerKey consumerSecret:consumerSecret];
     }
     return _oauth;
 }
@@ -113,10 +114,30 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
 }
 
 -(void)sendAccessToken:(NSString *)oauth_verifier {
-    [self.oauth postAccessTokenRequestWithPIN:oauth_verifier successBlock:^(NSString *oauthToken, NSString *oauthTokenSecret, NSString *userID, NSString *screenName) {
+    [self.oauth postAccessTokenRequestWithPIN:oauth_verifier successBlock:^(NSString *oauthToken,
+                                                                            NSString *oauthTokenSecret,
+                                                                            NSString *userID,
+                                                                            NSString *screenName) {
         
-       // [[NSUserDefaults standardUserDefaults] setObject:oauthToken forKey:TWI_STORE_AUTH_TOKEN];
-        //[[NSUserDefaults standardUserDefaults] setObject:oauthTokenSecret forKey:TWI_STORE_AUTH_SECRET];
+        [[NSUserDefaults standardUserDefaults] setObject:oauthToken forKey:@"oauthToken"];
+        [[NSUserDefaults standardUserDefaults] setObject:oauthTokenSecret forKey:@"oauthTokenSecret"];
+        
+        /*
+         At this point, the user can use the API and you can read his access tokens with:
+         
+         _twitter.oauthAccessToken;
+         _twitter.oauthAccessTokenSecret;
+         
+         You can store these tokens (in user default, or in keychain) so that the user doesn't need to authenticate again on next launches.
+         
+         Next time, just instanciate STTwitter with the class method:
+         
+         +[STTwitterAPI twitterAPIWithOAuthConsumerKey:consumerSecret:oauthToken:oauthTokenSecret:]
+         
+         Don't forget to call the -[STTwitter verifyCredentialsWithSuccessBlock:errorBlock:] after that.
+         */
+        
+        [self loginWithiOSAccount:nil];
         //[[NSUserDefaults standardUserDefaults] synchronize];
     } errorBlock:^(NSError *error) {
         [self showAlertWithString:nil withError:error];
@@ -125,10 +146,20 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
 
 
 - (void)loginWithiOSAccount:(ACAccount *)account {
-    
     _twitter = nil;
-    _twitter = [STTwitterAPI twitterAPIOSWithFirstAccountAndDelegate:nil];
-    
+    if (account) {
+        
+        _twitter = [STTwitterAPI twitterAPIOSWithFirstAccountAndDelegate:nil];
+        
+        
+    } else {
+        _twitter = [STTwitterAPI twitterAPIWithOAuthConsumerKey:consumerKey
+                                                 consumerSecret:consumerSecret
+                                                     oauthToken:[[NSUserDefaults standardUserDefaults] valueForKey:@"oauthToken"]
+                                               oauthTokenSecret:[[NSUserDefaults standardUserDefaults] valueForKey:@"oauthTokenSecret"]];
+        
+
+    }
     [_twitter verifyCredentialsWithUserSuccessBlock:^(NSString *username, NSString *userID) {
         [_twitter getHomeTimelineSinceID:nil
                                    count:5
@@ -150,8 +181,8 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
         //_loginStatusLabel.text = [NSString stringWithFormat:@"@%@ (%@)", username, userID];
         
     } errorBlock:^(NSError *error) {
-       [self showAlertWithString:nil withError:error];
-       // _loginStatusLabel.text = [error localizedDescription];
+        [self showAlertWithString:nil withError:error];
+        // _loginStatusLabel.text = [error localizedDescription];
     }];
     
 }
@@ -170,12 +201,11 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
                 _accountSelectionBlock(nil, @"Acccess not granted.");
                 return;
             }
+            self.iOSAccounts = [_accountStore accountsWithAccountType:accountType];
             if([_iOSAccounts count] < 1) {
                 _accountSelectionBlock(nil, @"Twitter account not found. Please add in the settings.");
                 return;
             }
-
-            self.iOSAccounts = [_accountStore accountsWithAccountType:accountType];
             
             if([_iOSAccounts count] == 1) {
                 ACAccount *account = [_iOSAccounts lastObject];
