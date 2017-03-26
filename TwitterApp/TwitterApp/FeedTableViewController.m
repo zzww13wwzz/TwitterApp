@@ -25,9 +25,6 @@
 }
 
 
-
-
-
 - (void) setupNavigation {
     [[self navigationController] setNavigationBarHidden:NO animated:NO];
     

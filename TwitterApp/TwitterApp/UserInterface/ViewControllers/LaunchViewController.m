@@ -48,10 +48,10 @@
 
 - (void)setupUser {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    [userDefaults removeObjectForKey:@"user"];
+    [userDefaults removeObjectForKey:@"userID"];
     
-    if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user"]) {
-        NSLog(@"%@", [[NSUserDefaults standardUserDefaults] objectForKey:@"user"]);
+    if ([[NSUserDefaults standardUserDefaults] objectForKey:@"userID"]) {
+        NSLog(@"%@", [[NSUserDefaults standardUserDefaults] objectForKey:@"userID"]);
         [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"FeedVC"]
                                              animated:NO];
         

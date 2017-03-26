@@ -1,0 +1,34 @@
+//
+//  PrefixHeader.pch
+//  
+//
+//  Created by Viktoriia Vovk on 3/25/17.
+//
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+
+#import <UIKit/UIKit.h>
+#import <MBProgressHUD/MBProgressHUD.h>
+
+//#import "AppDelegate.h"
+#import "CoreData+MagicalRecord.h"
+#import "History.h"
+
+#define CONSUMER_KEY        @"vlmu1T2Vpsh1vN9jzCxSntnRo"
+#define CONSUMER_SECRET       @"By0VWWIipsJxATQ43vTJUGTBXDYZcYrcbFnDH1yD9vW8cuuKmE"
+
+#define SAVE_DB_LOCALY  [ApplicationDelegate saveDB]
+
+#define PICKER_PRESENTATION_VIEW [[UIApplication sharedApplication] keyWindow]
+
+#define ValidString(pointer) (pointer != nil && pointer.length > 0)
+
+#define PERFORM_BLOCK(block, ...) if (block) block(__VA_ARGS__)
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#endif /* PrefixHeader_pch */

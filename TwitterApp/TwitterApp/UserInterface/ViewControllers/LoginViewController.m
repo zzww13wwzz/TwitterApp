@@ -7,12 +7,10 @@
 //
 
 #import "LoginViewController.h"
-#import "STTwitter.h"
+//#import "STTwitter.h"
 #import "STTwitterOAuth.h"
 #import <Accounts/Accounts.h>
-
-NSString * const consumerKey = @"vlmu1T2Vpsh1vN9jzCxSntnRo";
-NSString * const consumerSecret = @"By0VWWIipsJxATQ43vTJUGTBXDYZcYrcbFnDH1yD9vW8cuuKmE";
+#import "TwitterAPI.h"
 
 @interface LoginViewController () <UIWebViewDelegate>
 
@@ -24,8 +22,9 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
 @property (weak, nonatomic) IBOutlet UIButton *signInAccountButton;
 @property (weak, nonatomic) IBOutlet UIButton *signInWebButton;
 
-@property (nonatomic, strong) STTwitterAPI *twitter;
+//@property (nonatomic, strong) STTwitterAPI *twitter;
 @property (nonatomic, strong) STTwitterOAuth *oauth;
+//@property (nonatomic, strong) TwitterAPI *twitterAPI;
 
 @property (nonatomic, strong) accountSelectionBlock_t accountSelectionBlock;
 
@@ -45,22 +44,11 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
 
 - (STTwitterOAuth *)oauth {
     if (!_oauth) {
-        _oauth = [STTwitterOAuth twitterOAuthWithConsumerName:@"TwitterApp" consumerKey:consumerKey consumerSecret:consumerSecret];
+        _oauth = [STTwitterOAuth twitterOAuthWithConsumerName:@"TwitterApp"
+                                                  consumerKey:CONSUMER_KEY
+                                               consumerSecret:CONSUMER_SECRET];
     }
     return _oauth;
-}
-
-- (void) showAlertWithString:(NSString *)string withError:(NSError *)error  {
-    if (string == nil){
-        string = error.localizedRecoverySuggestion;
-    }
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Error"
-                                                                   message:string
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"Ok"
-                                              style:UIAlertActionStyleCancel
-                                            handler:nil]];
-    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (IBAction)signInAccountAction:(id)sender {
@@ -74,20 +62,22 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
         if (account) {
             [weakSelf loginWithiOSAccount:account];
         }
-        //[weakSelf.signInAccountButton setTitle:status forState:UIControlStateNormal];
     };
     [self chooseAccount];
 }
 
 - (IBAction)signInWebAction:(id)sender {
-
-    [self.oauth postTokenRequest:^(NSURL *url, NSString *oauthToken) {
-        NSURLRequest *request = [NSURLRequest requestWithURL:url];
-        _webView.hidden = false;
-        [_webView loadRequest:request];
-    } oauthCallback:@"myapp://testlinkviktoriiavovk.com" errorBlock:^(NSError *error) {
-        [self showAlertWithString:nil withError:error];
-    }];
+    
+    [self.oauth postTokenRequest:^(NSURL *url, NSString *oauthToken)
+     {
+         NSURLRequest *request = [NSURLRequest requestWithURL:url];
+         _webView.hidden = false;
+         [_webView loadRequest:request];
+     }
+                   oauthCallback:@"myapp://testlinkviktoriiavovk.com"
+                      errorBlock:^(NSError *error) {
+                          [self showAlertWithString:nil withError:error];
+                      }];
 }
 
 -(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
@@ -109,7 +99,7 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
     NSInteger location = range.location + key.length;
     NSString * str = [string substringWithRange:NSMakeRange(location, string.length-location)];
     NSLog(@"string %@", str);
-
+    
     return str;
 }
 
@@ -118,7 +108,6 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
                                                                             NSString *oauthTokenSecret,
                                                                             NSString *userID,
                                                                             NSString *screenName) {
-        
         [[NSUserDefaults standardUserDefaults] setObject:oauthToken forKey:@"oauthToken"];
         [[NSUserDefaults standardUserDefaults] setObject:oauthTokenSecret forKey:@"oauthTokenSecret"];
         
@@ -146,45 +135,15 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
 
 
 - (void)loginWithiOSAccount:(ACAccount *)account {
-    _twitter = nil;
-    if (account) {
-        
-        _twitter = [STTwitterAPI twitterAPIOSWithFirstAccountAndDelegate:nil];
-        
-        
-    } else {
-        _twitter = [STTwitterAPI twitterAPIWithOAuthConsumerKey:consumerKey
-                                                 consumerSecret:consumerSecret
-                                                     oauthToken:[[NSUserDefaults standardUserDefaults] valueForKey:@"oauthToken"]
-                                               oauthTokenSecret:[[NSUserDefaults standardUserDefaults] valueForKey:@"oauthTokenSecret"]];
-        
-
-    }
-    [_twitter verifyCredentialsWithUserSuccessBlock:^(NSString *username, NSString *userID) {
-        [_twitter getHomeTimelineSinceID:nil
-                                   count:5
-                            successBlock:^(NSArray *statuses) {
-                                
-                                NSLog(@"-- statuses: %@", statuses);
-                                
-                                //self.getTimelineStatusLabel.text = [NSString stringWithFormat:@"%lu statuses", (unsigned long)[statuses count]];
-                                
-                                //self.statuses = statuses;
-                                
-                                //[self.tableView reloadData];
-                                
-                            } errorBlock:^(NSError *error) {
-                                [self showAlertWithString:nil withError:error];
-                                NSLog(@"%@", error);
-                                //self.getTimelineStatusLabel.text = [error localizedDescription];
-                            }];
-        //_loginStatusLabel.text = [NSString stringWithFormat:@"@%@ (%@)", username, userID];
-        
-    } errorBlock:^(NSError *error) {
-        [self showAlertWithString:nil withError:error];
-        // _loginStatusLabel.text = [error localizedDescription];
-    }];
-    
+    TwitterAPI * twitterAPI = [TwitterAPI new];
+    [twitterAPI loadTweetWithIOSAccount:account
+                             completion:^(NSError *error) {
+                                 if (error) {
+                                     [self showAlertWithString:nil withError:error];
+                                 } else {
+                                     [self goToNextScreen];
+                                 }
+                             }];
 }
 
 - (void)chooseAccount {
@@ -232,6 +191,30 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
     [self.accountStore requestAccessToAccountsWithType:accountType
                                                options:NULL
                                             completion:accountStoreRequestCompletionHandler];
+}
+
+- (void)goToNextScreen {
+    [self.navigationController popViewControllerAnimated:YES];
+//    [self presentViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"FeedVC"]
+//                       animated:NO
+//                     completion:nil];
+//    [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"FeedVC"]
+//                                         animated:NO];
+}
+
+- (void) showAlertWithString:(NSString *)string withError:(NSError *)error  {
+    NSString *title = nil;
+    if (string == nil){
+        string = error.localizedRecoverySuggestion;
+        title = @"Error";
+    }
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title
+                                                                   message:string
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Ok"
+                                              style:UIAlertActionStyleCancel
+                                            handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)didReceiveMemoryWarning {

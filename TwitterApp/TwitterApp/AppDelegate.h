@@ -12,10 +12,19 @@
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
-
 @property (readonly, strong) NSPersistentContainer *persistentContainer;
 
-- (void)saveContext;
+@property (nonatomic) MBProgressHUD * mbprogressHUD;
+
+- (void) showMBProgressHUDWithTitle:(NSString *)title
+                           subTitle:(NSString *)subtitle
+                               view:(UIView *)view;
+
+- (void) saveDB;
+- (void) cleanAndResetupDB;
+
+
+//- (void)saveContext;
 
 
 @end

@@ -172,7 +172,7 @@
                                 </connections>
                             </button>
                             <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="snP-Fm-QyF">
-                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
                                     <outlet property="delegate" destination="AC2-C6-lM8" id="sHR-Fc-V8Y"/>
@@ -194,7 +194,7 @@
                             <constraint firstItem="sVz-eH-LVG" firstAttribute="centerX" secondItem="tUg-pd-stw" secondAttribute="centerX" id="sNI-uz-ZXo"/>
                             <constraint firstItem="F3g-Y7-Rqj" firstAttribute="leading" secondItem="tUg-pd-stw" secondAttribute="leadingMargin" constant="59" id="tJI-s5-VUT"/>
                             <constraint firstItem="snP-Fm-QyF" firstAttribute="leading" secondItem="tUg-pd-stw" secondAttribute="leadingMargin" constant="-16" id="trf-EH-2Df"/>
-                            <constraint firstItem="snP-Fm-QyF" firstAttribute="top" secondItem="OCM-BK-IlP" secondAttribute="bottom" id="v24-yI-qaf"/>
+                            <constraint firstItem="snP-Fm-QyF" firstAttribute="top" secondItem="OCM-BK-IlP" secondAttribute="bottom" constant="-20" id="v24-yI-qaf"/>
                             <constraint firstAttribute="trailingMargin" secondItem="bVf-Di-dL6" secondAttribute="trailing" constant="60" id="xwp-Cq-Ajo"/>
                             <constraint firstAttribute="trailingMargin" secondItem="sVz-eH-LVG" secondAttribute="trailing" constant="20" id="zzZ-Xa-fLN"/>
                         </constraints>
