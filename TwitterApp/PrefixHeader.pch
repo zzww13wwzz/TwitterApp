@@ -13,12 +13,12 @@
 #import <UIKit/UIKit.h>
 #import <MBProgressHUD/MBProgressHUD.h>
 
-//#import "AppDelegate.h"
+#import "AppDelegate.h"
 #import "CoreData+MagicalRecord.h"
 #import "History.h"
 
-#define CONSUMER_KEY        @"vlmu1T2Vpsh1vN9jzCxSntnRo"
-#define CONSUMER_SECRET       @"By0VWWIipsJxATQ43vTJUGTBXDYZcYrcbFnDH1yD9vW8cuuKmE"
+#define CONSUMER_KEY        @"fKMSzlJ3kElxUo1vxUz4AXg2G"
+#define CONSUMER_SECRET       @"JXPsXX3JPwas5TZfQf5U3Z9x2M6vp4uAyGWtjqLYHBXVBdMeO9"
 
 #define SAVE_DB_LOCALY  [ApplicationDelegate saveDB]
 
@@ -27,6 +27,8 @@
 #define ValidString(pointer) (pointer != nil && pointer.length > 0)
 
 #define PERFORM_BLOCK(block, ...) if (block) block(__VA_ARGS__)
+
+#define ApplicationDelegate ((AppDelegate *)[[UIApplication sharedApplication] delegate])
 
 // Include any system framework and library headers here that should be included in all compilation units.
 // You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.

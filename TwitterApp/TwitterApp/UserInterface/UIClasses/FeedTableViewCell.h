@@ -11,7 +11,7 @@
 @interface FeedTableViewCell : UITableViewCell
 
 - (void) setProperty:(NSString *)property;
-
+@property (nonatomic) History * history;
 @end
 
 

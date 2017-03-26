@@ -9,10 +9,12 @@
 #import "FeedTableViewController.h"
 #import "FeedTableViewCell.h"
 #import "NewViewController.h"
-#import "STTwitterAPI.h"
+//#import "STTwitterAPI.h"
+#import "TwitterAPI.h"
 
 @interface FeedTableViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
+@property (strong, nonatomic) NSMutableArray * historyArray;
 
 @end
 
@@ -20,8 +22,28 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setupView];
     [self setupNavigation];
+   // [self loadFeed];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self loadFeed];
+}
+
+- (void)loadFeed {
+    [ApplicationDelegate cleanAndResetupDB];
+    
+    TwitterAPI * twitterAPI = [TwitterAPI new];
+    
+    [twitterAPI loadTweetWithIOSAccount:nil
+                             completion:^(NSError *error) {
+                                 if (error) {
+                                     [self showAlertWithString:nil withError:error];
+                                 } else {
+                                     [self reloadItems];
+                                 }
+                             }];
 }
 
 
@@ -38,46 +60,19 @@
                                                                    action:@selector(logoutAction)];
 }
 
-- (void)setupView {
+- (void) reloadItems {
+    _historyArray = [[[History MR_findAll] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"createdAt"
+                                                                                                       ascending:NO]]] mutableCopy];
     
-//    twitterAPIOSWithFirstAccount
+    [_tableView reloadData];
     
-//    STTwitterAPI *twitter = [STTwitterAPI twitterAPIWithOAuthConsumerKey:@"vlmu1T2Vpsh1vN9jzCxSntnRo" consumerSecret:@"By0VWWIipsJxATQ43vTJUGTBXDYZcYrcbFnDH1yD9vW8cuuKmE"];
-//    
-//    [twitter verifyCredentialsWithSuccessBlock:^(NSString *bearerToken) {
-//        
-//        NSLog(@"Access granted with %@", bearerToken);
-//        
-//        [twitter getUserTimelineWithScreenName:@"barackobama" successBlock:^(NSArray *statuses) {
-//            NSLog(@"-- statuses: %@", statuses);
-//        } errorBlock:^(NSError *error) {
-//            NSLog(@"-- error: %@", error);
-//        }];
-//        
-//    } errorBlock:^(NSError *error) {
-//        NSLog(@"-- error %@", error);
-//    }];
-    
-//    STTwitterAPI *twitter = [STTwitterAPI twitterAPIApplicationOnlyWithConsumerKey:OAUTH_CONSUMER_KEY consumerSecret:OAUTH_CONSUMER_SECRET];
-//    
-//    [twitter verifyCredentialsWithSuccessBlock:^(NSString *username) {
-//        
-//        [twitter getSearchTweetsWithQuery:searchQuery successBlock:^(NSDictionary *searchMetadata, NSArray *statuses) {
-//            NSLog(@"Search data : %@",searchMetadata);
-//            NSLog(@"\n\n Status : %@",statuses);
-//            
-//        } errorBlock:^(NSError *error) {
-//            NSLog(@"Error : %@",error);
-//        }];
-//        
-//    } errorBlock:^(NSError *error) {
-//        NSLog(@"-- error %@", error);
-//    }];
-    
+//    _noHistoryLabel.hidden = (_historyArray.count > 0);
 }
+
 
 - (void) newAction {
     NewViewController * newVC = [self.storyboard instantiateViewControllerWithIdentifier:@"NewVC"];
+//    _account
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:newVC];
     navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     [self.navigationController presentViewController:navController
@@ -109,33 +104,66 @@
 }
 
 - (void) logout {
-//    [ApplicationDelegate cleanAndResetupDB];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"userID"];
+    
+    [ApplicationDelegate cleanAndResetupDB];
+    
+    NSString * accountName =[[NSUserDefaults standardUserDefaults] objectForKey:@"account.username"];
+    if (accountName) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"account.username"];
+    }
+    
     NSLog(@"LOGOUT");
-//    [self.navigationController popToRootViewControllerAnimated:NO];
+    [self.navigationController popToRootViewControllerAnimated:NO];
 }
-
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
 
-#pragma mark - Table view data source
+#pragma mark - tableview
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 4;
+- (CGFloat) tableView:(UITableView *)tableView
+heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 80.;
+}
+- (NSInteger)tableView:(UITableView *)tableView
+ numberOfRowsInSection:(NSInteger)section {
+    return _historyArray.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     FeedTableViewCell *cell = (FeedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"FeedCell"];
 
-    [cell setProperty:@"NEED SEND MODEL"];
+    cell.history = _historyArray[indexPath.row];
     return cell;
+    
+//    [cell setProperty:@"NEED SEND MODEL"];
+//    return cell;
 }
+
+- (void) showAlertWithString:(NSString *)string withError:(NSError *)error  {
+    NSString *title = nil;
+    if (string == nil){
+        string = error.localizedRecoverySuggestion;
+        title = @"Error";
+    }
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title
+                                                                   message:string
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Ok"
+                                              style:UIAlertActionStyleCancel
+                                            handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+
+
 
 - (void) tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath

@@ -15,4 +15,6 @@
 - (void)loadTweetWithIOSAccount:(ACAccount *)account
                  completion:(void (^)(NSError * error))completion;
 
+- (void) postTweetWithMessage:(NSString *)message
+                   completion:(void (^)(NSError * error))completion;
 @end

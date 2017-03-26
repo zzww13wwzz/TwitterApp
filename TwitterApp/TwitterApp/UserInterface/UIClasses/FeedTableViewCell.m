@@ -7,6 +7,7 @@
 //
 
 #import "FeedTableViewCell.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface FeedTableViewCell ()
 @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;
@@ -34,5 +35,25 @@
 -(void)setProperty:(NSString *)property {
     self.nameLabel.text = property;
 }
+
+
+- (void) setHistory:(History *)history
+{
+    _history = history;
+    
+    _nameLabel.text = history.userName;
+    
+    _messageLabel.text = history.textMessage;
+    
+    if (ValidString(_history.userIconUrl)) {
+        [_iconImageView sd_setImageWithURL:[NSURL URLWithString:_history.userIconUrl]
+                             placeholderImage:[UIImage imageNamed:@"img_diamond"]];
+    }
+    else {
+        _iconImageView.image = [UIImage imageNamed:@"img_diamond"];
+    }
+
+}
+
 
 @end

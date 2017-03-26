@@ -12,74 +12,174 @@
 @interface TwitterAPI ()
 
 @property (nonatomic, strong) STTwitterAPI *twitter;
-
+@property (nonatomic, strong) ACAccount *savedAccount;
 @end
 
 @implementation TwitterAPI
 
+- (ACAccount *)savedAccount {
+    _savedAccount = nil;
+    NSString * accountName =[[NSUserDefaults standardUserDefaults] objectForKey:@"account.username"];
+    if (accountName) {
+        ACAccountStore * accountStore = [[ACAccountStore alloc] init];
+        ACAccountType *accountType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+        NSArray *iOSAccounts = [accountStore accountsWithAccountType:accountType];
+        if (iOSAccounts.count > 0) {
+            for(ACAccount *acc in iOSAccounts) {
+                if ([acc.username isEqualToString:accountName]) {
+                    _savedAccount = acc;
+                }
+            }
+        }
+    }
+    return _savedAccount;
+}
 
-- (void)loadTweetWithIOSAccount:(ACAccount *)account
-                     completion:(void (^)(NSError * error))completion
+- (void) postTweetWithMessage:(NSString *)message
+        completion:(void (^)(NSError * error))completion
 {
-    _twitter = nil;
-    if (account) {
-        _twitter = [STTwitterAPI twitterAPIOSWithAccount:account delegate:nil];
+    if (_savedAccount) {
+        _twitter = [STTwitterAPI twitterAPIOSWithAccount:_savedAccount delegate:nil];
     } else {
         _twitter = [STTwitterAPI twitterAPIWithOAuthConsumerKey:CONSUMER_KEY
                                                  consumerSecret:CONSUMER_SECRET
                                                      oauthToken:[[NSUserDefaults standardUserDefaults] valueForKey:@"oauthToken"]
                                                oauthTokenSecret:[[NSUserDefaults standardUserDefaults] valueForKey:@"oauthTokenSecret"]];
-        
-        
     }
     [_twitter verifyCredentialsWithUserSuccessBlock:^(NSString *username, NSString *userID) {
+        [ _twitter postStatusesUpdate:message
+                    inReplyToStatusID:nil
+                             latitude:nil
+                            longitude:nil
+                              placeID:nil
+                   displayCoordinates:nil
+                             trimUser:nil
+            autoPopulateReplyMetadata:nil
+           excludeReplyUserIDsStrings:nil
+                  attachmentURLString:nil
+                 useExtendedTweetMode:nil
+                         successBlock:^(NSDictionary *status) {
+                             NSDateFormatter * dateFormatter = [NSDateFormatter new];
+                             dateFormatter.dateFormat = @"EEE MMM dd HH:mm:ss ZZZ yyyy";
+                             NSTimeZone * timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+                             dateFormatter.timeZone = timeZone;
+                             
+                             for (id key in status) {
+                                 NSLog(@"key: %@, value: %@ \n", key, [status objectForKey:key]);
+                             }
+                             
+                             [History historyWithNickName:status[@"user"][@"screen_name"]
+                                                 userName:status[@"user"][@"name"]
+                                              userIconUrl:status[@"user"][@"profile_image_url_https"]
+                                              textMessage:status[@"text"]
+                                                createdAt:[dateFormatter dateFromString:status[@"created_at"]]];
+                             
+                             NSLog(@"-- status2: %@", status);
+                             SAVE_DB_LOCALY;
+                             PERFORM_BLOCK(completion, nil);
+                         } errorBlock:^(NSError *error) {
+                             NSLog(@"-- error2: %@", error);
+                             PERFORM_BLOCK(completion, error);
+                         }];
+        
+    } errorBlock:^(NSError *error) {
+        NSLog(@"-- error0: %@", error);
+        PERFORM_BLOCK(completion, error);
+    }];
+    
+    
+    
+    
+    //    self.twitter = [STTwitterAPI twitterAPIOSWithFirstAccount];
+    
+    //    [_twitter verifyCredentialsWithSuccessBlock:^(NSString *username) {
+    
+    
+    //    }];
+    
+    //    [twitter postStatusUpdate:@"test"
+    //            inReplyToStatusID:nil
+    //                     latitude:nil
+    //                    longitude:nil
+    //                      placeID:nil
+    //           displayCoordinates:nil
+    //                     trimUser:nil
+    //                 successBlock:^(NSDictionary *status) {
+    //                     // ...
+    //                 } errorBlock:^(NSError *error) {
+    //                     // ...
+    //                 }];
+}
+
+- (void)pullToRefreash {
+    _twitter = nil;
+    //    _twitter = [STTwitterAPI twitterAPIWithOAuthConsumerKey:<#(NSString *)#> consumerSecret:<#(NSString *)#> oauthToken:<#(NSString *)#> oauthTokenSecret:<#(NSString *)#>]
+    
+    /*
+     At this point, the user can use the API and you can read his access tokens with:
+     
+     _twitter.oauthAccessToken;
+     _twitter.oauthAccessTokenSecret;
+     
+     You can store these tokens (in user default, or in keychain) so that the user doesn't need to authenticate again on next launches.
+     
+     Next time, just instanciate STTwitter with the class method:
+     
+     +[STTwitterAPI twitterAPIWithOAuthConsumerKey:consumerSecret:oauthToken:oauthTokenSecret:]
+     
+     Don't forget to call the -[STTwitter verifyCredentialsWithSuccessBlock:errorBlock:] after that.
+     */
+    
+}
+
+- (void)loadTweetWithIOSAccount:(ACAccount *)account
+                     completion:(void (^)(NSError * error))completion
+{
+    _twitter = nil;
+    
+    if (account) {
+        _twitter = [STTwitterAPI twitterAPIOSWithAccount:account delegate:nil];
+    } else if (_savedAccount){
+        _twitter = [STTwitterAPI twitterAPIOSWithAccount:_savedAccount delegate:nil];
+    } else {
+        _twitter = [STTwitterAPI twitterAPIWithOAuthConsumerKey:CONSUMER_KEY
+                                                 consumerSecret:CONSUMER_SECRET
+                                                     oauthToken:[[NSUserDefaults standardUserDefaults] valueForKey:@"oauthToken"]
+                                               oauthTokenSecret:[[NSUserDefaults standardUserDefaults] valueForKey:@"oauthTokenSecret"]];
+    }
+    
+    [_twitter verifyCredentialsWithUserSuccessBlock:^(NSString *username, NSString *userID) {
         [_twitter getHomeTimelineSinceID:nil
-                                   count:5
+                                   count:50
                             successBlock:^(NSArray *statuses) {
                                 [[NSUserDefaults standardUserDefaults] setObject:userID forKey:@"userID"];
-                                NSLog(@"-- statuses: %@", statuses);
+                                
+                                //                                NSLog(@"-- statuses: %@", statuses);
                                 for (NSDictionary * tweet in statuses) {
                                     NSDateFormatter * dateFormatter = [NSDateFormatter new];
                                     dateFormatter.dateFormat = @"EEE MMM dd HH:mm:ss ZZZ yyyy";
-//                                    @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"
-//                                    @"EEE, dd MMM yyyy HH:mm:ss ZZZ"]
-//                                    Fri Mar 24 14:45:39 +0000 2017
                                     NSTimeZone * timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
                                     dateFormatter.timeZone = timeZone;
-//                                    NSLocale *locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-//                                    dateFormatter.locale = locale;
+                                    
                                     for (id key in tweet) {
                                         NSLog(@"key: %@, value: %@ \n", key, [tweet objectForKey:key]);
                                     }
-                                    NSLog(@"block = %@", tweet);
+                                    
                                     [History historyWithNickName:tweet[@"user"][@"screen_name"]
                                                         userName:tweet[@"user"][@"name"]
-                                                     userIconUrl:tweet[@"user"][@"profile_image_url"]
+                                                     userIconUrl:tweet[@"user"][@"profile_image_url_https"]
                                                      textMessage:tweet[@"text"]
                                                        createdAt:[dateFormatter dateFromString:tweet[@"created_at"]]];
-//                                    if(sinceID) md[@"since_id"] = sinceID;
-//                                    if(count) md[@"count"] = count;
-                                    
                                     
                                 }
-                                
-                                //self.statuses = statuses;
-                                
-                                //[self.tableView reloadData];
+                                SAVE_DB_LOCALY;
                                 PERFORM_BLOCK(completion, nil);
                             } errorBlock:^(NSError *error) {
-                                
-                               // [self showAlertWithString:nil withError:error];
                                 NSLog(@"%@", error);
-                                //self.getTimelineStatusLabel.text = [error localizedDescription];
                                 PERFORM_BLOCK(completion, error);
                             }];
-        //_loginStatusLabel.text = [NSString stringWithFormat:@"@%@ (%@)", username, userID];
-        
     } errorBlock:^(NSError *error) {
         PERFORM_BLOCK(completion, error);
-        //[self showAlertWithString:nil withError:error];
-        // _loginStatusLabel.text = [error localizedDescription];
     }];
     
 }

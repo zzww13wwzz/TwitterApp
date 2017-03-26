@@ -15,20 +15,19 @@
                       textMessage:(NSString *)textMessage
                         createdAt:(NSDate *)createdAt
 {
-    History * history = [History MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"nickName == %@", nickName]];
+    History * history = [History MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"textMessage == %@", textMessage]];
     
     if (!history) {
         history = [History MR_createEntity];
-        history.nickName = nickName;
-        if (userIconUrl) {
-            history.userIconUrl = userIconUrl;
-        }
-        
-        history.createdAt = createdAt;
-        history.userName = userName;
-        history.textMessage = textMessage;
-        
     }
+    history.nickName = nickName;
+    if (userIconUrl) {
+        history.userIconUrl = userIconUrl;
+    }
+    
+    history.createdAt = createdAt;
+    history.userName = userName;
+    history.textMessage = textMessage;
     return history;
 }
 

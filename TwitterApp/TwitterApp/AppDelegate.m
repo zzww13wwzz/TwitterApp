@@ -53,6 +53,7 @@
 
 - (void) saveDB {
     [MagicalRecord saveUsingCurrentThreadContextWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        NSLog(@"applicationDidEnterBackground: Saving finished");
     }];
 }
 

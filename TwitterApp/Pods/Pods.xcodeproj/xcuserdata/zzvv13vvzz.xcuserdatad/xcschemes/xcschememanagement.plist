@@ -19,6 +19,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>SDWebImage.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>STTwitter.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -27,6 +32,16 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>1AE7275555904E84872D21E70C6A8484</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4173F609D1A292481D4D6C5D65319B81</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>44043489BB712FEE61998C3EADF6004E</key>
 		<dict>
 			<key>primary</key>
@@ -37,12 +52,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>78E12B79F3E6FFCB3F056936B9B78F59</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>BC59E71D3CDA9DE5A530C9B439679B63</key>
+		<key>A4C3D8CA0396923634C75CA40D58584D</key>
 		<dict>
 			<key>primary</key>
 			<true/>

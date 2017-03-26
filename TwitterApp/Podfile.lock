@@ -1,11 +1,15 @@
 PODS:
   - MagicalRecord/Shorthand (2.2)
   - MBProgressHUD (1.0.0)
+  - SDWebImage (4.0.0):
+    - SDWebImage/Core (= 4.0.0)
+  - SDWebImage/Core (4.0.0)
   - STTwitter (0.2.6)
 
 DEPENDENCIES:
   - MagicalRecord/Shorthand
   - MBProgressHUD (from `https://github.com/jdg/MBProgressHUD.git`, tag `1.0.0`)
+  - SDWebImage
   - STTwitter
 
 EXTERNAL SOURCES:
@@ -21,8 +25,9 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   MagicalRecord: 2dc87179ae7c1f2a274442624ec65a07d4357a6f
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
+  SDWebImage: 76a6348bdc74eb5a55dd08a091ef298e56b55e41
   STTwitter: 30ee2f79eff78c3d633a1edc869e97db9c9ead59
 
-PODFILE CHECKSUM: 25af180ca0d26edd5014fb15d1bb5818de11893d
+PODFILE CHECKSUM: 74acb305416f2c71efbea342099974a5faa49fd7
 
 COCOAPODS: 1.2.0

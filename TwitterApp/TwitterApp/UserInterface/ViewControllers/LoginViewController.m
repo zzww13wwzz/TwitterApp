@@ -11,6 +11,7 @@
 #import "STTwitterOAuth.h"
 #import <Accounts/Accounts.h>
 #import "TwitterAPI.h"
+#import "FeedTableViewController.h"
 
 @interface LoginViewController () <UIWebViewDelegate>
 
@@ -110,22 +111,7 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
                                                                             NSString *screenName) {
         [[NSUserDefaults standardUserDefaults] setObject:oauthToken forKey:@"oauthToken"];
         [[NSUserDefaults standardUserDefaults] setObject:oauthTokenSecret forKey:@"oauthTokenSecret"];
-        
-        /*
-         At this point, the user can use the API and you can read his access tokens with:
-         
-         _twitter.oauthAccessToken;
-         _twitter.oauthAccessTokenSecret;
-         
-         You can store these tokens (in user default, or in keychain) so that the user doesn't need to authenticate again on next launches.
-         
-         Next time, just instanciate STTwitter with the class method:
-         
-         +[STTwitterAPI twitterAPIWithOAuthConsumerKey:consumerSecret:oauthToken:oauthTokenSecret:]
-         
-         Don't forget to call the -[STTwitter verifyCredentialsWithSuccessBlock:errorBlock:] after that.
-         */
-        
+
         [self loginWithiOSAccount:nil];
         //[[NSUserDefaults standardUserDefaults] synchronize];
     } errorBlock:^(NSError *error) {
@@ -141,6 +127,7 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
                                  if (error) {
                                      [self showAlertWithString:nil withError:error];
                                  } else {
+                                     //[[NSUserDefaults standardUserDefaults] setObject:account forKey:@"account"];
                                      [self goToNextScreen];
                                  }
                              }];
@@ -181,6 +168,7 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
                     [alert addAction:[UIAlertAction actionWithTitle:[NSString stringWithFormat:@"@%@", account.username]
                                                               style:UIAlertActionStyleDefault
                                                             handler:^(UIAlertAction * action) {
+                                                                [[NSUserDefaults standardUserDefaults] setValue:account.username forKey:@"account.username"];
                                                                 _accountSelectionBlock(account, nil);                                                            }]];
                 }
                 [self presentViewController:alert animated:YES completion:nil];
@@ -194,12 +182,7 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
 }
 
 - (void)goToNextScreen {
-    [self.navigationController popViewControllerAnimated:YES];
-//    [self presentViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"FeedVC"]
-//                       animated:NO
-//                     completion:nil];
-//    [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"FeedVC"]
-//                                         animated:NO];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void) showAlertWithString:(NSString *)string withError:(NSError *)error  {
