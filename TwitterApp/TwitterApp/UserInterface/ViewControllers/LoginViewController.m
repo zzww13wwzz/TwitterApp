@@ -23,9 +23,7 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
 @property (weak, nonatomic) IBOutlet UIButton *signInAccountButton;
 @property (weak, nonatomic) IBOutlet UIButton *signInWebButton;
 
-//@property (nonatomic, strong) STTwitterAPI *twitter;
 @property (nonatomic, strong) STTwitterOAuth *oauth;
-//@property (nonatomic, strong) TwitterAPI *twitterAPI;
 
 @property (nonatomic, strong) accountSelectionBlock_t accountSelectionBlock;
 
@@ -39,35 +37,39 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self setup];
+}
+
+- (void)setup {
     self.accountStore = [[ACAccountStore alloc] init];
     _webView.hidden = true;
 }
 
-- (STTwitterOAuth *)oauth {
-    if (!_oauth) {
-        _oauth = [STTwitterOAuth twitterOAuthWithConsumerName:@"TwitterApp"
-                                                  consumerKey:CONSUMER_KEY
-                                               consumerSecret:CONSUMER_SECRET];
-    }
-    return _oauth;
-}
 
 - (IBAction)signInAccountAction:(id)sender {
-    
+
     __weak typeof(self) weakSelf = self;
     
     self.accountSelectionBlock = ^(ACAccount *account, NSString *errorMessage) {
         if (errorMessage) {
+//            [ApplicationDelegate.mbprogressHUD hideAnimated:NO];
             [weakSelf showAlertWithString:errorMessage withError:nil];
         }
         if (account) {
             [weakSelf loginWithiOSAccount:account];
+//            [ApplicationDelegate.mbprogressHUD hideAnimated:NO];
         }
     };
     [self chooseAccount];
 }
 
 - (IBAction)signInWebAction:(id)sender {
+    [ApplicationDelegate showMBProgressHUDWithTitle:nil
+                                           subTitle:nil
+                                               view:self.view];
+    self.oauth = [STTwitterOAuth twitterOAuthWithConsumerName:@"TwitterApp"
+                                              consumerKey:CONSUMER_KEY
+                                           consumerSecret:CONSUMER_SECRET];
     
     [self.oauth postTokenRequest:^(NSURL *url, NSString *oauthToken)
      {
@@ -82,12 +84,15 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
 }
 
 -(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    [ApplicationDelegate.mbprogressHUD hideAnimated:NO];
     NSURL *url = [request URL];
     NSLog(@"Loading URL: %@", [url absoluteString]);
     if ([[url host] isEqualToString:@"testlinkviktoriiavovk.com"]) {
         _webView.hidden = true;
         NSString * str = [self verifier:url.absoluteString];
-        [self sendAccessToken:str];
+        if (ValidString(str)) {
+            [self sendAccessToken:str];
+        }
         return NO;
     }
     return YES;
@@ -95,12 +100,14 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
 
 -(NSString *)verifier:(NSString *)string {
     //NSString * str = @"Loading URL: myapp://testlinkviktoriiavovk.com?oauth_token=LjqBAwAAAAAAzxAaAAABWwHcSho&oauth_verifier=RJynI1kZtr36yWNIW64SSVZkz2Bz101x";
+    NSString * str;
     NSString * key = @"auth_verifier=";
-    NSRange   range = [string rangeOfString:@"auth_verifier="];
-    NSInteger location = range.location + key.length;
-    NSString * str = [string substringWithRange:NSMakeRange(location, string.length-location)];
-    NSLog(@"string %@", str);
-    
+    if (!([string rangeOfString:key].location == NSNotFound)) {
+        NSRange   range = [string rangeOfString:key];
+        NSInteger location = range.location + key.length;
+        //myapp://testlinkviktoriiavovk.com?denied=BLRTTgAAAAAAzxAaAAABWwyYf14
+        str = [string substringWithRange:NSMakeRange(location, string.length-location)];
+    }
     return str;
 }
 
@@ -111,9 +118,8 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
                                                                             NSString *screenName) {
         [[NSUserDefaults standardUserDefaults] setObject:oauthToken forKey:@"oauthToken"];
         [[NSUserDefaults standardUserDefaults] setObject:oauthTokenSecret forKey:@"oauthTokenSecret"];
-
+        
         [self loginWithiOSAccount:nil];
-        //[[NSUserDefaults standardUserDefaults] synchronize];
     } errorBlock:^(NSError *error) {
         [self showAlertWithString:nil withError:error];
     }];
@@ -121,13 +127,16 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
 
 
 - (void)loginWithiOSAccount:(ACAccount *)account {
+    [ApplicationDelegate showMBProgressHUDWithTitle:nil
+                                           subTitle:nil
+                                               view:self.view];
     TwitterAPI * twitterAPI = [TwitterAPI new];
     [twitterAPI loadTweetWithIOSAccount:account
                              completion:^(NSError *error) {
+                                 [ApplicationDelegate.mbprogressHUD hideAnimated:NO];
                                  if (error) {
                                      [self showAlertWithString:nil withError:error];
                                  } else {
-                                     //[[NSUserDefaults standardUserDefaults] setObject:account forKey:@"account"];
                                      [self goToNextScreen];
                                  }
                              }];
@@ -168,7 +177,6 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
                     [alert addAction:[UIAlertAction actionWithTitle:[NSString stringWithFormat:@"@%@", account.username]
                                                               style:UIAlertActionStyleDefault
                                                             handler:^(UIAlertAction * action) {
-                                                                [[NSUserDefaults standardUserDefaults] setValue:account.username forKey:@"account.username"];
                                                                 _accountSelectionBlock(account, nil);                                                            }]];
                 }
                 [self presentViewController:alert animated:YES completion:nil];
@@ -188,7 +196,7 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
 - (void) showAlertWithString:(NSString *)string withError:(NSError *)error  {
     NSString *title = nil;
     if (string == nil){
-        string = error.localizedRecoverySuggestion;
+        string = [error localizedDescription];
         title = @"Error";
     }
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title

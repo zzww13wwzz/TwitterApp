@@ -17,7 +17,12 @@ NS_ASSUME_NONNULL_BEGIN
                          userName:(NSString *)userName
                       userIconUrl:(NSString *)userIconUrl
                       textMessage:(NSString *)textMessage
+                     retweetCount:(NSString *)retweetCount
+                    favoriteCount:(NSString *)favoriteCount
+                         mediaUrls:(NSArray *)mediaUrls
+                          isPhoto:(NSNumber *)isPhoto
                         createdAt:(NSDate *)createdAt;
+
 @end
 
 NS_ASSUME_NONNULL_END

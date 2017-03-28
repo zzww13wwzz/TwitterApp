@@ -13,6 +13,10 @@
                          userName:(NSString *)userName
                       userIconUrl:(NSString *)userIconUrl
                       textMessage:(NSString *)textMessage
+                     retweetCount:(NSString *)retweetCount
+                    favoriteCount:(NSString *)favoriteCount
+                         mediaUrls:(NSArray *)mediaUrls
+                          isPhoto:(NSNumber *)isPhoto
                         createdAt:(NSDate *)createdAt
 {
     History * history = [History MR_findFirstWithPredicate:[NSPredicate predicateWithFormat:@"textMessage == %@", textMessage]];
@@ -28,6 +32,10 @@
     history.createdAt = createdAt;
     history.userName = userName;
     history.textMessage = textMessage;
+    history.retweetCount = retweetCount;
+    history.favoriteCount = favoriteCount;
+    history.isPhoto = isPhoto;
+    history.mediaUrls = mediaUrls;
     return history;
 }
 

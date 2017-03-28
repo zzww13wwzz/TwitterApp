@@ -29,28 +29,23 @@
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
+    [super setSelected:false animated:false];
 }
-
--(void)setProperty:(NSString *)property {
-    self.nameLabel.text = property;
-}
-
 
 - (void) setHistory:(History *)history
 {
     _history = history;
     
-    _nameLabel.text = history.userName;
+    _nameLabel.text = _history.userName;
     
-    _messageLabel.text = history.textMessage;
+    _messageLabel.text = _history.textMessage;
     
     if (ValidString(_history.userIconUrl)) {
         [_iconImageView sd_setImageWithURL:[NSURL URLWithString:_history.userIconUrl]
                              placeholderImage:[UIImage imageNamed:@"img_diamond"]];
     }
     else {
-        _iconImageView.image = [UIImage imageNamed:@"img_diamond"];
+        _iconImageView.backgroundColor = [UIColor grayColor];
     }
 
 }

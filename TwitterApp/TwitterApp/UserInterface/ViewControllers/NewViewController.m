@@ -65,7 +65,7 @@
 - (void) showAlertWithString:(NSString *)string withError:(NSError *)error  {
     NSString *title = nil;
     if (string == nil){
-        string = error.localizedRecoverySuggestion;
+        string = [error localizedDescription];
         title = @"Error";
     }
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title

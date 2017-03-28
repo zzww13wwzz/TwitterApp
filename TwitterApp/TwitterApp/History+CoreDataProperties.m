@@ -15,5 +15,9 @@
 @dynamic textMessage;
 @dynamic userIconUrl;
 @dynamic userName;
+@dynamic retweetCount;
+@dynamic favoriteCount;
+@dynamic mediaUrls;
+@dynamic isPhoto;
 
 @end

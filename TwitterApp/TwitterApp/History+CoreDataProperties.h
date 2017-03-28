@@ -18,6 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSString *textMessage;
 @property (nullable, nonatomic, copy) NSString *userIconUrl;
 @property (nullable, nonatomic, copy) NSString *userName;
+@property (nullable, nonatomic, copy) NSString *retweetCount;
+@property (nullable, nonatomic, copy) NSString *favoriteCount;
+@property (nullable, nonatomic, copy) NSArray *mediaUrls;
+@property (nullable, nonatomic, retain) NSNumber * isPhoto;
 
 @end
 

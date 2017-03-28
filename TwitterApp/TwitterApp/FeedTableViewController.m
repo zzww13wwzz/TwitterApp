@@ -9,7 +9,7 @@
 #import "FeedTableViewController.h"
 #import "FeedTableViewCell.h"
 #import "NewViewController.h"
-//#import "STTwitterAPI.h"
+#import "DetailViewController.h"
 #import "TwitterAPI.h"
 
 @interface FeedTableViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -28,7 +28,8 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self loadFeed];
+//    [self loadFeed];
+    [self reloadItems];
 }
 
 - (void)loadFeed {
@@ -74,6 +75,7 @@
     NewViewController * newVC = [self.storyboard instantiateViewControllerWithIdentifier:@"NewVC"];
 //    _account
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:newVC];
+    navController.title = @"New";
     navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     [self.navigationController presentViewController:navController
                                             animated:YES
@@ -111,6 +113,10 @@
     NSString * accountName =[[NSUserDefaults standardUserDefaults] objectForKey:@"account.username"];
     if (accountName) {
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"account.username"];
+    }
+    if ([[NSUserDefaults standardUserDefaults] valueForKey:@"oauthToken"]){
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"oauthToken"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"oauthTokenSecret"];
     }
     
     NSLog(@"LOGOUT");
@@ -168,8 +174,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
 - (void) tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"TAP TAp");
-    [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"DetailVC"]
+    DetailViewController * detailVC = [self.storyboard instantiateViewControllerWithIdentifier:@"DetailVC"];
+    detailVC.history = _historyArray[indexPath.row];
+    
+    [self.navigationController pushViewController:detailVC
                                          animated:YES];
 }
 
