@@ -20,6 +20,8 @@
 #define CONSUMER_KEY        @"fKMSzlJ3kElxUo1vxUz4AXg2G"
 #define CONSUMER_SECRET       @"JXPsXX3JPwas5TZfQf5U3Z9x2M6vp4uAyGWtjqLYHBXVBdMeO9"
 
+#define NOTIFICATION_internet_connection_lost       @"NOTIFICATION_internet_connection_lost"
+
 #define SAVE_DB_LOCALY  [ApplicationDelegate saveDB]
 
 #define PICKER_PRESENTATION_VIEW [[UIApplication sharedApplication] keyWindow]
@@ -29,6 +31,7 @@
 #define PERFORM_BLOCK(block, ...) if (block) block(__VA_ARGS__)
 
 #define ApplicationDelegate ((AppDelegate *)[[UIApplication sharedApplication] delegate])
+
 
 // Include any system framework and library headers here that should be included in all compilation units.
 // You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.

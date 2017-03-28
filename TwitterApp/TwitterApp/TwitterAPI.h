@@ -9,8 +9,13 @@
 #import <Foundation/Foundation.h>
 #import <Accounts/Accounts.h>
 #import "STTwitter.h"
+#import <AFNetworking/AFNetworking.h>
 
 @interface TwitterAPI : NSObject
+
++ (BOOL) isInternetAvailable;
+
++ (void) setupReachability;
 
 - (void)loadTweetWithIOSAccount:(ACAccount *)account
                  completion:(void (^)(NSError * error))completion;

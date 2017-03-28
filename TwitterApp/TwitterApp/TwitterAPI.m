@@ -8,16 +8,43 @@
 
 #import "TwitterAPI.h"
 #import "History.h"
+#import "Reachability.h"
 
 @interface TwitterAPI ()
 
 @property (nonatomic, strong) STTwitterAPI *twitter;
-//@property (nonatomic, strong) ACAccount *savedAccount;
+
 @end
 
 @implementation TwitterAPI
 
-- (ACAccount *)savedAccount {
++ (BOOL) isInternetAvailable
+{
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    NetworkStatus internetStatus = [reachability currentReachabilityStatus];
+    if (internetStatus != NotReachable) {
+        return YES;
+    }
+    else {
+        return NO;
+    }
+}
+
++ (void) setupReachability
+{
+    [[AFNetworkReachabilityManager sharedManager] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        if (![[self class] isInternetAvailable]) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_internet_connection_lost
+                                                                object:nil];
+        }
+    }];
+    
+    [[AFNetworkReachabilityManager sharedManager] startMonitoring];
+}
+
+
+- (ACAccount *)savedAccount
+{
     ACAccount * account = nil;
     NSString * accountName =[[NSUserDefaults standardUserDefaults] objectForKey:@"account.username"];
     if (accountName) {
@@ -113,9 +140,8 @@
     
 }
 
-
-- (void)saveData:(NSDictionary *)tweet {
-    
+- (void)saveData:(NSDictionary *)tweet
+{
     NSDateFormatter * dateFormatter = [NSDateFormatter new];
     dateFormatter.dateFormat = @"EEE MMM dd HH:mm:ss ZZZ yyyy";
     dateFormatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
@@ -154,7 +180,4 @@
     
 }
 
-- (void)pullToRefreash {
-    _twitter = nil;
-}
 @end

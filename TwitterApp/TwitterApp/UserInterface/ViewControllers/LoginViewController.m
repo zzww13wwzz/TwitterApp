@@ -67,6 +67,8 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
     [ApplicationDelegate showMBProgressHUDWithTitle:nil
                                            subTitle:nil
                                                view:self.view];
+    if ([TwitterAPI isInternetAvailable]) {
+        
     self.oauth = [STTwitterOAuth twitterOAuthWithConsumerName:@"TwitterApp"
                                               consumerKey:CONSUMER_KEY
                                            consumerSecret:CONSUMER_SECRET];
@@ -81,6 +83,10 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
                       errorBlock:^(NSError *error) {
                           [self showAlertWithString:nil withError:error];
                       }];
+    } else {
+        [ApplicationDelegate.mbprogressHUD hideAnimated:NO];
+        [self showAlertWithString:@"Internet connection lost, please try again later." withError:nil];
+    }
 }
 
 -(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
@@ -131,15 +137,21 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
                                            subTitle:nil
                                                view:self.view];
     TwitterAPI * twitterAPI = [TwitterAPI new];
-    [twitterAPI loadTweetWithIOSAccount:account
-                             completion:^(NSError *error) {
-                                 [ApplicationDelegate.mbprogressHUD hideAnimated:NO];
-                                 if (error) {
-                                     [self showAlertWithString:nil withError:error];
-                                 } else {
-                                     [self goToNextScreen];
-                                 }
-                             }];
+    if ([TwitterAPI isInternetAvailable]) {
+        [twitterAPI loadTweetWithIOSAccount:account
+                                 completion:^(NSError *error) {
+                                     [ApplicationDelegate.mbprogressHUD hideAnimated:NO];
+                                     if (error) {
+                                         [self showAlertWithString:nil withError:error];
+                                     } else {
+                                         [self goToNextScreen];
+                                     }
+                                 }];
+    } else {
+        [self showAlertWithString:@"Internet connection lost, please try again later." withError:nil];
+        [ApplicationDelegate.mbprogressHUD hideAnimated:NO];
+    }
+    
 }
 
 - (void)chooseAccount {

@@ -1,4 +1,19 @@
 PODS:
+  - AFNetworking (3.1.0):
+    - AFNetworking/NSURLSession (= 3.1.0)
+    - AFNetworking/Reachability (= 3.1.0)
+    - AFNetworking/Security (= 3.1.0)
+    - AFNetworking/Serialization (= 3.1.0)
+    - AFNetworking/UIKit (= 3.1.0)
+  - AFNetworking/NSURLSession (3.1.0):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (3.1.0)
+  - AFNetworking/Security (3.1.0)
+  - AFNetworking/Serialization (3.1.0)
+  - AFNetworking/UIKit (3.1.0):
+    - AFNetworking/NSURLSession
   - MagicalRecord/Shorthand (2.2)
   - MBProgressHUD (1.0.0)
   - SDWebImage (4.0.0):
@@ -7,6 +22,7 @@ PODS:
   - STTwitter (0.2.6)
 
 DEPENDENCIES:
+  - AFNetworking
   - MagicalRecord/Shorthand
   - MBProgressHUD (from `https://github.com/jdg/MBProgressHUD.git`, tag `1.0.0`)
   - SDWebImage
@@ -23,11 +39,12 @@ CHECKOUT OPTIONS:
     :tag: 1.0.0
 
 SPEC CHECKSUMS:
+  AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   MagicalRecord: 2dc87179ae7c1f2a274442624ec65a07d4357a6f
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
   SDWebImage: 76a6348bdc74eb5a55dd08a091ef298e56b55e41
   STTwitter: 30ee2f79eff78c3d633a1edc869e97db9c9ead59
 
-PODFILE CHECKSUM: 74acb305416f2c71efbea342099974a5faa49fd7
+PODFILE CHECKSUM: 0a961b1fa2500374c81b8f2f5a7dc5c707c8c41f
 
 COCOAPODS: 1.2.0

@@ -3,9 +3,11 @@
 
 target 'TwitterApp' do
 
+pod 'AFNetworking'
 pod 'MagicalRecord/Shorthand'
 pod 'STTwitter'
 pod 'MBProgressHUD', :git => 'https://github.com/jdg/MBProgressHUD.git', :tag => '1.0.0'
 pod 'SDWebImage'
+
 
 end

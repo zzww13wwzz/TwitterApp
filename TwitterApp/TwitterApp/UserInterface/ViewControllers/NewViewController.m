@@ -19,6 +19,10 @@
     [super viewDidLoad];
     [self setupNavigationBar];
 }
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self.messageTextView becomeFirstResponder];
+}
 
 - (void)setupNavigationBar {
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Close"
@@ -38,27 +42,38 @@
 -(void)onSaveButtonTap {
     if (!ValidString(_messageTextView.text)) {
         [self showAlertWithString:@"Message is empty" withError:nil];
+        return;
     }
+    if ([TwitterAPI isInternetAvailable]) {
+        [ApplicationDelegate showMBProgressHUDWithTitle:nil
+                                               subTitle:nil
+                                                   view:self.view];
+        TwitterAPI * twitterAPI = [TwitterAPI new];
+        [twitterAPI postTweetWithMessage:_messageTextView.text
+                              completion:^(NSError *error) {
+                                  [ApplicationDelegate.mbprogressHUD hideAnimated:NO];
+                                  if (error) {
+                                      [self showAlertWithString:nil withError:error];
+                                  } else {
+                                      [_messageTextView resignFirstResponder];
+                                      UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Successful!"
+                                                                                                     message:nil
+                                                                                              preferredStyle:UIAlertControllerStyleAlert];
+                                      [alert addAction:[UIAlertAction actionWithTitle:@"Ok"
+                                                                                style:UIAlertActionStyleCancel
+                                                                              handler:^(UIAlertAction * action) {
+                                                                                  [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+                                                                              }]];
+                                      [self presentViewController:alert animated:YES completion:nil];
+                                  }
+                                  
+                              }];
+    } else {
+        [self showAlertWithString:@"Internet connection lost, please try again later." withError:nil];
+        [ApplicationDelegate.mbprogressHUD hideAnimated:NO];
+    }
+    [self.messageTextView resignFirstResponder];
     
-    TwitterAPI * twitterAPI = [TwitterAPI new];
-    [twitterAPI postTweetWithMessage:_messageTextView.text
-                          completion:^(NSError *error) {
-                              if (error) {
-                                  [self showAlertWithString:nil withError:error];
-                              } else {
-                                  [_messageTextView resignFirstResponder];
-                                  UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Successful!"
-                                                                                                 message:nil
-                                                                                          preferredStyle:UIAlertControllerStyleAlert];
-                                  [alert addAction:[UIAlertAction actionWithTitle:@"Ok"
-                                                                            style:UIAlertActionStyleCancel
-                                                                          handler:^(UIAlertAction * action) {
-                                                                              [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-                                                                          }]];
-                                  [self presentViewController:alert animated:YES completion:nil];
-                              }
-                              
-                          }];
     //[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 

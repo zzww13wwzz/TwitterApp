@@ -15,7 +15,7 @@
 @interface FeedTableViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (strong, nonatomic) NSMutableArray * historyArray;
-
+@property (strong, nonatomic) UIRefreshControl * refreshControl;
 @end
 
 @implementation FeedTableViewController
@@ -23,16 +23,61 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupNavigation];
-   // [self loadFeed];
+    [self pulToRefreash];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-//    [self loadFeed];
-    [self reloadItems];
+    [self tableReloader];
+}
+
+- (void) setupNavigation {
+    [[self navigationController] setNavigationBarHidden:NO animated:NO];
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"New"
+                                                                              style:UIBarButtonItemStylePlain
+                                                                             target:self
+                                                                             action:@selector(newAction)];
+    self.navigationItem.leftBarButtonItem =  [[UIBarButtonItem alloc] initWithTitle:@"Logout"
+                                                                              style:UIBarButtonItemStylePlain
+                                                                             target:self
+                                                                             action:@selector(logoutAction)];
+}
+
+- (void) pulToRefreash {
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    self.refreshControl.backgroundColor = [UIColor darkGrayColor];
+    self.refreshControl.tintColor = [UIColor whiteColor];
+    [self.refreshControl addTarget:self
+                            action:@selector(tableReloader)
+                  forControlEvents:UIControlEventValueChanged];
+    [self.tableView addSubview:(self.refreshControl)];
+}
+
+- (void)tableReloader {
+
+    if ([TwitterAPI isInternetAvailable]) {
+        [self loadFeed];
+    } else {
+        [self reloadItems];
+    }
 }
 
 - (void)loadFeed {
+
+    if (self.refreshControl) {
+        
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"MMM d, h:mm a"];
+        NSString *title = [NSString stringWithFormat:@"Last update: %@", [formatter stringFromDate:[NSDate date]]];
+        NSDictionary *attrsDictionary = [NSDictionary dictionaryWithObject:[UIColor whiteColor]
+                                                                    forKey:NSForegroundColorAttributeName];
+        NSAttributedString *attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:attrsDictionary];
+        self.refreshControl.attributedTitle = attributedTitle;
+        
+        [self.refreshControl endRefreshing];
+    }
+    
     [ApplicationDelegate cleanAndResetupDB];
     
     TwitterAPI * twitterAPI = [TwitterAPI new];
@@ -45,35 +90,28 @@
                                      [self reloadItems];
                                  }
                              }];
-}
-
-
-- (void) setupNavigation {
-    [[self navigationController] setNavigationBarHidden:NO animated:NO];
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"New"
-                                                                   style:UIBarButtonItemStylePlain
-                                                                  target:self
-                                                                  action:@selector(newAction)];
-    self.navigationItem.leftBarButtonItem =  [[UIBarButtonItem alloc] initWithTitle:@"Logout"
-                                                                    style:UIBarButtonItemStylePlain
-                                                                   target:self
-                                                                   action:@selector(logoutAction)];
+    
 }
+
+
+
 
 - (void) reloadItems {
+    if (self.refreshControl) {
+        [self.refreshControl endRefreshing];
+    }
     _historyArray = [[[History MR_findAll] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"createdAt"
                                                                                                        ascending:NO]]] mutableCopy];
     
-    [_tableView reloadData];
     
-//    _noHistoryLabel.hidden = (_historyArray.count > 0);
+    [_tableView reloadData];
 }
 
 
 - (void) newAction {
     NewViewController * newVC = [self.storyboard instantiateViewControllerWithIdentifier:@"NewVC"];
-//    _account
+    //    _account
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:newVC];
     navController.title = @"New";
     navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -87,14 +125,14 @@
                                   alertControllerWithTitle:@"Are you sure you want to logout?"
                                   message:nil
                                   preferredStyle:UIAlertControllerStyleAlert];
-
+    
     [alert addAction:[UIAlertAction
-                       actionWithTitle:@"Logout"
-                       style:UIAlertActionStyleDefault
-                       handler:^(UIAlertAction * action) {
-                           [self logout];
-                           [alert dismissViewControllerAnimated:YES completion:nil];
-                       }]];
+                      actionWithTitle:@"Logout"
+                      style:UIAlertActionStyleDefault
+                      handler:^(UIAlertAction * action) {
+                          [self logout];
+                          [alert dismissViewControllerAnimated:YES completion:nil];
+                      }]];
     [alert addAction:[UIAlertAction
                       actionWithTitle:@"Cancel"
                       style:UIAlertActionStyleDefault
@@ -145,12 +183,12 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     FeedTableViewCell *cell = (FeedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"FeedCell"];
-
+    
     cell.history = _historyArray[indexPath.row];
     return cell;
     
-//    [cell setProperty:@"NEED SEND MODEL"];
-//    return cell;
+    //    [cell setProperty:@"NEED SEND MODEL"];
+    //    return cell;
 }
 
 - (void) showAlertWithString:(NSString *)string withError:(NSError *)error  {
