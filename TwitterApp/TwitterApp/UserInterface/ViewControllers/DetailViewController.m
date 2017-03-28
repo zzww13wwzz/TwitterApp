@@ -24,8 +24,7 @@
 @property (weak, nonatomic) IBOutlet UIView *contentView;
 
 @property (weak, nonatomic) IBOutlet UIView *scrollContentView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *contextViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mediaContentHeightConstraint;
 
 @end
 
@@ -34,6 +33,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setup];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self setupViews];
 }
 
 - (void) setup {
@@ -50,22 +54,35 @@
     
     _timeLabel.text = [self createdDateFormatted];
     _detailsLabel.text = [NSString stringWithFormat:@"%@ retweets, %@ likes", self.history.retweetCount, self.history.favoriteCount];
+    _messageLabel.frame  = CGRectMake(_messageLabel.frame.origin.x,
+                                      _messageLabel.frame.origin.y,
+                                      _messageLabel.frame.size.width,
+                                      [self optimizationMessageHeight]);
     
-    [self optimizationMessageHeight];
-//    _timeLabel.frame = CGRectMake(_timeLabel.frame.origin.x, _messageLabel.frame.origin.y + _messageLabel.frame.size.height, _timeLabel.frame.size.width, _timeLabel.frame.size.height);
+    self.mediaContentHeightConstraint.constant = self.contentView.frame.size.height * self.history.mediaUrls.count;
+    
+}
+
+- (void) setupViews {
+    self.scrollView.frame = self.view.bounds;
+    
+    self.scrollView.contentSize = self.scrollView.frame.size;
+    self.scrollView.contentOffset = CGPointZero;
     if (self.history.mediaUrls.count > 0){
         if ([self.history.isPhoto boolValue]) {
             for (NSString * link in self.history.mediaUrls) {
-                UIImageView *view =[[UIImageView alloc] initWithFrame: CGRectMake(0,
-                                                                                  (_contentView.frame.size.height) * [self.history.mediaUrls indexOfObject:link],
-                                                                                  self.view.frame.size.width - _contentView.frame.origin.x*2,
-                                                                                  _contentView.frame.size.height)];
-                [view sd_setImageWithURL:[NSURL URLWithString:link]];
-                view.contentMode = UIViewContentModeScaleAspectFit;
-                [self.contentView addSubview:view];
+                NSLog(@"self.history.mediaUrls.count = %lu", self.history.mediaUrls.count);
+                CGRect frame = CGRectMake(0,
+                                          (_contentView.frame.size.height) * [self.history.mediaUrls indexOfObject:link],
+                                          self.view.frame.size.width - _contentView.frame.origin.x*2,
+                                          _contentView.frame.size.height);
                 
+                UIImageView *view =[[UIImageView alloc] initWithFrame:frame];
+                view.contentMode = UIViewContentModeScaleAspectFit;
+                [view sd_setImageWithURL:[NSURL URLWithString:link]];
+                
+                [self.contentView addSubview:view];
             }
-            self.contextViewHeightConstraint.constant = _contentView.frame.size.height * self.history.mediaUrls.count;
         } else {
             for (NSString * link in self.history.mediaUrls) {
                 AVPlayerItem *item = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:link]];
@@ -84,21 +101,18 @@
                 [player seekToTime:kCMTimeZero];
                 [player play];
             }
-            self.contextViewHeightConstraint.constant = _contentView.frame.size.height * (self.history.mediaUrls.count+1);
-            
-
         }
-    } else {
-        self.contextViewHeightConstraint.constant = 0;
     }
-    self.scrollView.frame = self.view.frame;
-    CGFloat height = self.contextViewHeightConstraint.constant + _detailsLabel.frame.size.height;
-    self.scrollContentView.frame =  CGRectMake(0, 0, self.view.frame.size.width, height*2);
-    self.scrollView.contentSize = self.scrollContentView.frame.size;
-    self.scrollView.contentOffset = CGPointZero;
-    self.automaticallyAdjustsScrollViewInsets = YES;
-    //self.scrollView.contentSize = CGSizeMake(self.view.frame.size.width, height*2);
-
+    float cpn = self.mediaContentHeightConstraint.constant + self.detailsLabel.frame.size.height +1 +self.contentView.frame.origin.y;
+    
+    self.scrollContentView.frame = CGRectMake(_scrollContentView.frame.origin.x,
+                                              _scrollContentView.frame.origin.y,
+                                              self.scrollView.frame.size.width,
+                                              cpn);
+    
+    self.scrollView.scrollEnabled = (self.scrollView.contentSize.height < cpn);
+    
+    
 }
 
 -(void)playerDidFinishPlaying:(NSNotification *)notification {
@@ -116,7 +130,7 @@
     return string;
 }
 
-- (void)optimizationMessageHeight {
+- (CGFloat)optimizationMessageHeight {
     CGSize constraint = CGSizeMake(_messageLabel.frame.size.width, CGFLOAT_MAX);
     CGSize size;
     
@@ -128,7 +142,7 @@
     
     size = CGSizeMake(ceil(boundingBox.width), ceil(boundingBox.height));
     
-    self.messageHeightConstraint.constant = size.height;
+    return size.height;
 }
 
 - (void)didReceiveMemoryWarning {

@@ -55,7 +55,7 @@
 }
 
 - (void)tableReloader {
-
+    
     if ([TwitterAPI isInternetAvailable]) {
         [self loadFeed];
     } else {
@@ -64,7 +64,7 @@
 }
 
 - (void)loadFeed {
-
+    
     if (self.refreshControl) {
         
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
@@ -90,12 +90,7 @@
                                      [self reloadItems];
                                  }
                              }];
-    
-    
 }
-
-
-
 
 - (void) reloadItems {
     if (self.refreshControl) {
@@ -103,7 +98,6 @@
     }
     _historyArray = [[[History MR_findAll] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"createdAt"
                                                                                                        ascending:NO]]] mutableCopy];
-    
     
     [_tableView reloadData];
 }
@@ -186,9 +180,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
     
     cell.history = _historyArray[indexPath.row];
     return cell;
-    
-    //    [cell setProperty:@"NEED SEND MODEL"];
-    //    return cell;
 }
 
 - (void) showAlertWithString:(NSString *)string withError:(NSError *)error  {

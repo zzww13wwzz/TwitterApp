@@ -13,7 +13,6 @@
 		B850B6481E8A474500E2A517 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = B850B6461E8A474500E2A517 /* Reachability.m */; };
 		B858E1EA1E82F6C100F3818F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B858E1E91E82F6C100F3818F /* main.m */; };
 		B858E1ED1E82F6C100F3818F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B858E1EC1E82F6C100F3818F /* AppDelegate.m */; };
-		B858E1F01E82F6C100F3818F /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B858E1EF1E82F6C100F3818F /* ViewController.m */; };
 		B858E1F31E82F6C100F3818F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B858E1F11E82F6C100F3818F /* Main.storyboard */; };
 		B858E1F61E82F6C100F3818F /* TwitterApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B858E1F41E82F6C100F3818F /* TwitterApp.xcdatamodeld */; };
 		B858E1F81E82F6C100F3818F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B858E1F71E82F6C100F3818F /* Assets.xcassets */; };
@@ -64,8 +63,6 @@
 		B858E1E91E82F6C100F3818F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B858E1EB1E82F6C100F3818F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B858E1EC1E82F6C100F3818F /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		B858E1EE1E82F6C100F3818F /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		B858E1EF1E82F6C100F3818F /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		B858E1F21E82F6C100F3818F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B858E1F51E82F6C100F3818F /* TwitterApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TwitterApp.xcdatamodel; sourceTree = "<group>"; };
 		B858E1F71E82F6C100F3818F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -208,8 +205,6 @@
 		B858E21E1E83130A00F3818F /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				B858E1EE1E82F6C100F3818F /* ViewController.h */,
-				B858E1EF1E82F6C100F3818F /* ViewController.m */,
 				B858E21F1E8313B000F3818F /* LaunchViewController.h */,
 				B858E2201E8313B000F3818F /* LaunchViewController.m */,
 				B858E2221E8318FD00F3818F /* LoginViewController.h */,
@@ -441,7 +436,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B850A20F1E87B33700F67CFB /* History+CoreDataProperties.m in Sources */,
-				B858E1F01E82F6C100F3818F /* ViewController.m in Sources */,
 				B858E22F1E831A8E00F3818F /* FeedTableViewCell.m in Sources */,
 				B858E1ED1E82F6C100F3818F /* AppDelegate.m in Sources */,
 				B858E2241E8318FD00F3818F /* LoginViewController.m in Sources */,
