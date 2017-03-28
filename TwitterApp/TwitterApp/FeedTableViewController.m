@@ -31,7 +31,7 @@
     [self tableReloader];
 }
 
-- (void) setupNavigation {
+- (void)setupNavigation {
     [[self navigationController] setNavigationBarHidden:NO animated:NO];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"New"
@@ -44,7 +44,7 @@
                                                                              action:@selector(logoutAction)];
 }
 
-- (void) pulToRefreash {
+- (void)pulToRefreash {
     self.refreshControl = [[UIRefreshControl alloc] init];
     self.refreshControl.backgroundColor = [UIColor darkGrayColor];
     self.refreshControl.tintColor = [UIColor whiteColor];
@@ -55,7 +55,6 @@
 }
 
 - (void)tableReloader {
-    
     if ([TwitterAPI isInternetAvailable]) {
         [self loadFeed];
     } else {
@@ -64,9 +63,7 @@
 }
 
 - (void)loadFeed {
-    
     if (self.refreshControl) {
-        
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
         [formatter setDateFormat:@"MMM d, h:mm a"];
         NSString *title = [NSString stringWithFormat:@"Last update: %@", [formatter stringFromDate:[NSDate date]]];
@@ -92,29 +89,26 @@
                              }];
 }
 
-- (void) reloadItems {
+- (void)reloadItems {
     if (self.refreshControl) {
         [self.refreshControl endRefreshing];
     }
     _historyArray = [[[History MR_findAll] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"createdAt"
                                                                                                        ascending:NO]]] mutableCopy];
-    
     [_tableView reloadData];
 }
 
 
-- (void) newAction {
+- (void)newAction {
     NewViewController * newVC = [self.storyboard instantiateViewControllerWithIdentifier:@"NewVC"];
-    //    _account
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:newVC];
-    navController.title = @"New";
     navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     [self.navigationController presentViewController:navController
                                             animated:YES
                                           completion:nil];
 }
 
-- (void) logoutAction {
+- (void)logoutAction {
     UIAlertController * alert=   [UIAlertController
                                   alertControllerWithTitle:@"Are you sure you want to logout?"
                                   message:nil
@@ -137,7 +131,7 @@
     [self presentViewController:alert animated:YES completion:nil];
 }
 
-- (void) logout {
+- (void)logout {
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"userID"];
     
     [ApplicationDelegate cleanAndResetupDB];
@@ -151,40 +145,12 @@
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"oauthTokenSecret"];
     }
     
-    NSLog(@"LOGOUT");
     [self.navigationController popToRootViewControllerAnimated:NO];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-#pragma mark - tableview
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
-- (CGFloat) tableView:(UITableView *)tableView
-heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return 80.;
-}
-- (NSInteger)tableView:(UITableView *)tableView
- numberOfRowsInSection:(NSInteger)section {
-    return _historyArray.count;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    FeedTableViewCell *cell = (FeedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"FeedCell"];
-    
-    cell.history = _historyArray[indexPath.row];
-    return cell;
-}
-
-- (void) showAlertWithString:(NSString *)string withError:(NSError *)error  {
+- (void)showAlertWithString:(NSString *)string withError:(NSError *)error  {
     NSString *title = nil;
-    if (string == nil){
+    if (string == nil) {
         string = error.localizedRecoverySuggestion;
         title = @"Error";
     }
@@ -197,12 +163,35 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
     [self presentViewController:alert animated:YES completion:nil];
 }
 
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+}
 
+#pragma mark - tableview
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 1;
+}
 
-- (void) tableView:(UITableView *)tableView
-didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (CGFloat)tableView:(UITableView *)tableView
+heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 80.;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView
+ numberOfRowsInSection:(NSInteger)section {
+    return _historyArray.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    FeedTableViewCell *cell = (FeedTableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"FeedCell"];
+    cell.history = _historyArray[indexPath.row];
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     DetailViewController * detailVC = [self.storyboard instantiateViewControllerWithIdentifier:@"DetailVC"];
     detailVC.history = _historyArray[indexPath.row];
     

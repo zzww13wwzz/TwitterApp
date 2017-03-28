@@ -24,7 +24,6 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
 @property (weak, nonatomic) IBOutlet UIButton *signInWebButton;
 
 @property (nonatomic, strong) STTwitterOAuth *oauth;
-
 @property (nonatomic, strong) accountSelectionBlock_t accountSelectionBlock;
 
 @property (nonatomic, strong) ACAccountStore *accountStore;
@@ -47,17 +46,15 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
 
 
 - (IBAction)signInAccountAction:(id)sender {
-
+    
     __weak typeof(self) weakSelf = self;
     
     self.accountSelectionBlock = ^(ACAccount *account, NSString *errorMessage) {
         if (errorMessage) {
-//            [ApplicationDelegate.mbprogressHUD hideAnimated:NO];
             [weakSelf showAlertWithString:errorMessage withError:nil];
         }
         if (account) {
             [weakSelf loginWithiOSAccount:account];
-//            [ApplicationDelegate.mbprogressHUD hideAnimated:NO];
         }
     };
     [self chooseAccount];
@@ -69,30 +66,33 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
                                                view:self.view];
     if ([TwitterAPI isInternetAvailable]) {
         
-    self.oauth = [STTwitterOAuth twitterOAuthWithConsumerName:@"TwitterApp"
-                                              consumerKey:CONSUMER_KEY
-                                           consumerSecret:CONSUMER_SECRET];
-    
-    [self.oauth postTokenRequest:^(NSURL *url, NSString *oauthToken)
-     {
-         NSURLRequest *request = [NSURLRequest requestWithURL:url];
-         _webView.hidden = false;
-         [_webView loadRequest:request];
-     }
-                   oauthCallback:@"myapp://testlinkviktoriiavovk.com"
-                      errorBlock:^(NSError *error) {
-                          [self showAlertWithString:nil withError:error];
-                      }];
+        self.oauth = [STTwitterOAuth twitterOAuthWithConsumerName:@"TwitterApp"
+                                                      consumerKey:CONSUMER_KEY
+                                                   consumerSecret:CONSUMER_SECRET];
+        
+        [self.oauth postTokenRequest:^(NSURL *url, NSString *oauthToken)
+         {
+             NSURLRequest *request = [NSURLRequest requestWithURL:url];
+             _webView.hidden = false;
+             [_webView loadRequest:request];
+         }
+                       oauthCallback:@"myapp://testlinkviktoriiavovk.com"
+                          errorBlock:^(NSError *error) {
+                              [self showAlertWithString:nil withError:error];
+                          }];
     } else {
         [ApplicationDelegate.mbprogressHUD hideAnimated:NO];
         [self showAlertWithString:@"Internet connection lost, please try again later." withError:nil];
     }
 }
 
--(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+- (BOOL)webView:(UIWebView *)webView
+shouldStartLoadWithRequest:(NSURLRequest *)request
+ navigationType:(UIWebViewNavigationType)navigationType {
+    
     [ApplicationDelegate.mbprogressHUD hideAnimated:NO];
     NSURL *url = [request URL];
-    NSLog(@"Loading URL: %@", [url absoluteString]);
+    
     if ([[url host] isEqualToString:@"testlinkviktoriiavovk.com"]) {
         _webView.hidden = true;
         NSString * str = [self verifier:url.absoluteString];
@@ -104,20 +104,18 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
     return YES;
 }
 
--(NSString *)verifier:(NSString *)string {
-    //NSString * str = @"Loading URL: myapp://testlinkviktoriiavovk.com?oauth_token=LjqBAwAAAAAAzxAaAAABWwHcSho&oauth_verifier=RJynI1kZtr36yWNIW64SSVZkz2Bz101x";
+- (NSString *)verifier:(NSString *)string {
     NSString * str;
     NSString * key = @"auth_verifier=";
     if (!([string rangeOfString:key].location == NSNotFound)) {
         NSRange   range = [string rangeOfString:key];
         NSInteger location = range.location + key.length;
-        //myapp://testlinkviktoriiavovk.com?denied=BLRTTgAAAAAAzxAaAAABWwyYf14
         str = [string substringWithRange:NSMakeRange(location, string.length-location)];
     }
     return str;
 }
 
--(void)sendAccessToken:(NSString *)oauth_verifier {
+- (void)sendAccessToken:(NSString *)oauth_verifier {
     [self.oauth postAccessTokenRequestWithPIN:oauth_verifier successBlock:^(NSString *oauthToken,
                                                                             NSString *oauthTokenSecret,
                                                                             NSString *userID,
@@ -205,7 +203,7 @@ typedef void (^accountSelectionBlock_t)(ACAccount *account, NSString *errorMessa
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void) showAlertWithString:(NSString *)string withError:(NSError *)error  {
+- (void)showAlertWithString:(NSString *)string withError:(NSError *)error  {
     NSString *title = nil;
     if (string == nil){
         string = [error localizedDescription];

@@ -8,48 +8,41 @@
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>1</integer>
+		</dict>
+		<key>FRHyperLabel.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
 		</dict>
 		<key>MBProgressHUD.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>3</integer>
 		</dict>
 		<key>MagicalRecord.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>2</integer>
 		</dict>
 		<key>Pods-TwitterApp.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>4</integer>
 		</dict>
 		<key>SDWebImage.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>5</integer>
 		</dict>
 		<key>STTwitter.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>6</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>09B2D03F9D49BE711BFF0E56147AE009</key>
+		<key>02577C4233C8840253A74C27E101B463</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -59,22 +52,27 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>53C6C8D5D282207DEF09B5A5306267A9</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>586F2DFA9BDCC6675C2546793A69E5CC</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>687BA503F94D5020CD8D666D8ED079E1</key>
+		<key>7DE7EB179A029A57587853EC00601CBD</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9DAFD15A6A4FDBDFBD560E0DD801C795</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>9E033EDB5EC0819481B0546434FA577B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DE7872EEE14AEE6B4FF5BB514A332A5B</key>
 		<dict>
 			<key>primary</key>
 			<true/>

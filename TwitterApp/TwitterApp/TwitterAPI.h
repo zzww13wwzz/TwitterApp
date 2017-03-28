@@ -13,9 +13,9 @@
 
 @interface TwitterAPI : NSObject
 
-+ (BOOL) isInternetAvailable;
++ (BOOL)isInternetAvailable;
 
-+ (void) setupReachability;
++ (void)setupReachability;
 
 - (void)loadTweetWithIOSAccount:(ACAccount *)account
                  completion:(void (^)(NSError * error))completion;

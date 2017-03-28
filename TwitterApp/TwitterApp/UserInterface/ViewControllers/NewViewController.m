@@ -13,12 +13,14 @@
 @property (weak, nonatomic) IBOutlet UITextView *messageTextView;
 @end
 
+
 @implementation NewViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupNavigationBar];
 }
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self.messageTextView becomeFirstResponder];
@@ -30,9 +32,9 @@
                                                                             target:self
                                                                             action:@selector(onBackButtonItemTap)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Save"
-                                                                             style:UIBarButtonItemStylePlain
-                                                                            target:self
-                                                                            action:@selector(onSaveButtonTap)];
+                                                                              style:UIBarButtonItemStylePlain
+                                                                             target:self
+                                                                             action:@selector(onSaveButtonTap)];
 }
 
 - (void)onBackButtonItemTap {
@@ -66,18 +68,15 @@
                                                                               }]];
                                       [self presentViewController:alert animated:YES completion:nil];
                                   }
-                                  
                               }];
     } else {
         [self showAlertWithString:@"Internet connection lost, please try again later." withError:nil];
         [ApplicationDelegate.mbprogressHUD hideAnimated:NO];
     }
     [self.messageTextView resignFirstResponder];
-    
-    //[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void) showAlertWithString:(NSString *)string withError:(NSError *)error  {
+- (void)showAlertWithString:(NSString *)string withError:(NSError *)error  {
     NSString *title = nil;
     if (string == nil){
         string = [error localizedDescription];
@@ -91,6 +90,7 @@
                                             handler:nil]];
     [self presentViewController:alert animated:YES completion:nil];
 }
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }

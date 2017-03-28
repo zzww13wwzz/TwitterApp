@@ -22,11 +22,10 @@
     [super didReceiveMemoryWarning];
 }
 
-- (void) viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
     if ([[NSUserDefaults standardUserDefaults] objectForKey:@"userID"]) {
-        NSLog(@"%@", [[NSUserDefaults standardUserDefaults] objectForKey:@"userID"]);
         [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"FeedVC"]
                                              animated:NO];
     } else {

@@ -18,10 +18,11 @@
 
 @implementation TwitterAPI
 
-+ (BOOL) isInternetAvailable
-{
++ (BOOL)isInternetAvailable {
+    
     Reachability *reachability = [Reachability reachabilityForInternetConnection];
     NetworkStatus internetStatus = [reachability currentReachabilityStatus];
+    
     if (internetStatus != NotReachable) {
         return YES;
     }
@@ -30,27 +31,27 @@
     }
 }
 
-+ (void) setupReachability
-{
++ (void)setupReachability {
     [[AFNetworkReachabilityManager sharedManager] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
         if (![[self class] isInternetAvailable]) {
             [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_internet_connection_lost
                                                                 object:nil];
         }
     }];
-    
     [[AFNetworkReachabilityManager sharedManager] startMonitoring];
 }
 
 
-- (ACAccount *)savedAccount
-{
+- (ACAccount *)savedAccount {
+    
     ACAccount * account = nil;
     NSString * accountName =[[NSUserDefaults standardUserDefaults] objectForKey:@"account.username"];
+    
     if (accountName) {
         ACAccountStore * accountStore = [[ACAccountStore alloc] init];
         ACAccountType *accountType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
         NSArray *iOSAccounts = [accountStore accountsWithAccountType:accountType];
+        
         if (iOSAccounts.count > 0) {
             for(ACAccount *acc in iOSAccounts) {
                 if ([acc.username isEqualToString:accountName]) {
@@ -62,9 +63,9 @@
     return account;
 }
 
-- (void) postTweetWithMessage:(NSString *)message
-                   completion:(void (^)(NSError * error))completion
-{
+- (void)postTweetWithMessage:(NSString *)message
+                  completion:(void (^)(NSError * error))completion {
+    
     if ([self savedAccount]) {
         _twitter = [STTwitterAPI twitterAPIOSWithAccount:[self savedAccount] delegate:nil];
     } else {
@@ -91,25 +92,21 @@
                              PERFORM_BLOCK(completion, nil);
                              
                          } errorBlock:^(NSError *error) {
-                             NSLog(@"-- error2: %@", error);
                              PERFORM_BLOCK(completion, error);
                          }];
         
     } errorBlock:^(NSError *error) {
-        NSLog(@"-- error0: %@", error);
         PERFORM_BLOCK(completion, error);
     }];
 }
 
 - (void)loadTweetWithIOSAccount:(ACAccount *)account
-                     completion:(void (^)(NSError * error))completion
-{
+                     completion:(void (^)(NSError * error))completion {
     _twitter = nil;
     
     if (account) {
         _twitter = [STTwitterAPI twitterAPIOSWithAccount:account delegate:nil];
         [[NSUserDefaults standardUserDefaults] setObject:account.username forKey:@"account.username"];
-        
     } else {
         if ([self savedAccount]){
             _twitter = [STTwitterAPI twitterAPIOSWithAccount:[self savedAccount] delegate:nil];
@@ -122,7 +119,7 @@
     }
     [_twitter verifyCredentialsWithUserSuccessBlock:^(NSString *username, NSString *userID) {
         [_twitter getHomeTimelineSinceID:nil
-                                   count:50
+                                   count:100
                             successBlock:^(NSArray *statuses) {
                                 [[NSUserDefaults standardUserDefaults] setObject:userID forKey:@"userID"];
                                 for (NSDictionary * tweet in statuses) {
@@ -140,8 +137,7 @@
     
 }
 
-- (void)saveData:(NSDictionary *)tweet
-{
+- (void)saveData:(NSDictionary *)tweet {
     NSDateFormatter * dateFormatter = [NSDateFormatter new];
     dateFormatter.dateFormat = @"EEE MMM dd HH:mm:ss ZZZ yyyy";
     dateFormatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];

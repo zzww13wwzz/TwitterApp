@@ -10,6 +10,7 @@
 #import <SDWebImage/UIImageView+WebCache.h>
 #import <AVKit/AVKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import "FRHyperLabel.h"
 
 @interface DetailViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *userIconImageView;
@@ -17,7 +18,7 @@
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (weak, nonatomic) IBOutlet UILabel *userNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *nickNameLabel;
-@property (weak, nonatomic) IBOutlet UILabel *messageLabel;
+@property (weak, nonatomic) IBOutlet FRHyperLabel *messageLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 @property (weak, nonatomic) IBOutlet UILabel *detailsLabel;
 
@@ -40,10 +41,10 @@
     [self setupViews];
 }
 
-- (void) setup {
+- (void)setup {
     _userNameLabel.text = self.history.userName;
-    _messageLabel.text = self.history.textMessage;
     _nickNameLabel.text = [NSString stringWithFormat:@"@%@", self.history.nickName];
+    [self makeLinkInString];
     
     if (ValidString(self.history.userIconUrl)) {
         [_userIconImageView sd_setImageWithURL:[NSURL URLWithString:self.history.userIconUrl]];
@@ -60,10 +61,9 @@
                                       [self optimizationMessageHeight]);
     
     self.mediaContentHeightConstraint.constant = self.contentView.frame.size.height * self.history.mediaUrls.count;
-    
 }
 
-- (void) setupViews {
+- (void)setupViews {
     self.scrollView.frame = self.view.bounds;
     
     self.scrollView.contentSize = self.scrollView.frame.size;
@@ -71,7 +71,6 @@
     if (self.history.mediaUrls.count > 0){
         if ([self.history.isPhoto boolValue]) {
             for (NSString * link in self.history.mediaUrls) {
-                NSLog(@"self.history.mediaUrls.count = %lu", self.history.mediaUrls.count);
                 CGRect frame = CGRectMake(0,
                                           (_contentView.frame.size.height) * [self.history.mediaUrls indexOfObject:link],
                                           self.view.frame.size.width - _contentView.frame.origin.x*2,
@@ -144,6 +143,35 @@
     
     return size.height;
 }
+
+- (void)makeLinkInString {
+    
+    NSString * match = [self parserMessageForLink];
+    
+    if (ValidString(match)) {
+        NSDictionary *attributes = @{NSFontAttributeName: [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]};
+        
+        _messageLabel.attributedText = [[NSAttributedString alloc]initWithString:self.history.textMessage attributes:attributes];
+        
+        [_messageLabel setLinkForSubstring:match withLinkHandler:^(FRHyperLabel *label, NSString *substring){
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:match]];
+        }];
+    } else {
+        _messageLabel.text = self.history.textMessage;
+    }
+}
+
+- (NSString *)parserMessageForLink {
+    NSString * source = self.history.textMessage;
+    NSRegularExpression *expression = [NSRegularExpression regularExpressionWithPattern:@"(?i)\\b((?:[a-z][\\w-]+:(?:/{1,3}|[a-z0-9%])|www\\d{0,3}[.]|[a-z0-9.\\-]+[.][a-z]{2,4}/)(?:[^\\s()<>]+|\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\))+(?:\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\)|[^\\s`!()\\[\\]{};:'\".,<>?«»“”‘’]))"
+                                                                                options:NSRegularExpressionCaseInsensitive error:NULL];
+    NSString *match = [source substringWithRange:[expression rangeOfFirstMatchInString:source options:NSMatchingReportCompletion range:NSMakeRange(0, [source length])]];
+    return match;
+}
+
+void(^handler)(FRHyperLabel *label, NSString *substring) = ^(FRHyperLabel *label, NSString *substring){
+    NSLog(@"Selected: %@", substring);
+};
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
